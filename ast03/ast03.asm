@@ -1,9 +1,11 @@
 ; *****************************************************************
-; Name:
-; NSHE_ID:
-; Section:
-; Assignment:
-; Description:
+; Name:Demitre Lester
+; NSHE_ID:2002641576
+; Section:1001
+; Assignment:3
+; Description: Learning to use arithmetic instructions, control
+;              instructions, compare instructions, and conditional
+;              jump instructions(logical ops,de-referencing,arrays)
 ; *****************************************************************
 
 %macro pushReg 0
@@ -320,6 +322,127 @@ _start:
     endInitLoop: 
 
     ; YOUR CODE HERE
+    
+    
+    ; traverse array lst and get the:
+    ; min, max, estMedian, sum, avg
+    ; count, sum, avg for numbers divisble by 7
+    ; count, sun, avg for numbers divisble by 12
+
+    ; make for loop
+    mov rbx, 0 ; sum = 0
+    ; had to use r8 instead of rcx since i use it in later stuff
+    mov r8, 0  ; i = 0
+
+    ; set min and max to first value in array
+    mov eax, dword [lst] ; eax = lst [0]
+    cdqe                 ; convert eax to rax
+    mov qword [min], rax ; min = lst [0]
+    mov qword [max], rax ; max = lst [0]
+    
+    sumLoop: ; label to jump to
+        mov eax, 0          ; clear EAX since i made it lst[0]
+        mov al, byte [len]  ; move length into AL
+        cmp r8, rax         ; check i against array length
+        jge done            ; jump to "done" label if rax >= length
+
+        ; minimum comparison
+        mov eax, dword [lst + r8*4] ; make eax = lst[i]
+        cmp eax, dword [min]        ; compare arr[i] to min
+        jge finishMin               ; if arr[i] >= min, skip min instructions
+        mov dword [min], eax        ; update min to arr[i]
+        finishMin:
+
+        ; maximum comparison
+        mov eax, dword [lst + r8*4] ; make eax = lst [i]
+        cdqe                        ; extend eax to rax
+        cmp rax, qword [max]        ; compare arr[i] to max
+        jle finishMax               ; if arr[i] <= max, skip max instructions
+        mov qword [max], rax        ; update max to arr[i]
+        finishMax:
+
+        ; check if divisible by 7
+        mov eax, dword [lst + r8*4]  ; eax = lst[i]
+        cdq                          ; sign extend eax to eax:edx
+        mov ecx, 7                   ; divisor is now 7
+        idiv ecx                     ; divide eax:edx by ecx
+        cmp edx, 0                   ; check if remainder = 0
+        jne checkSeven               ; if remainder != 0
+
+        ; if IS divisible by seven
+        inc qword [countSeven]       ; increment countSeven
+        mov eax, dword [lst + r8*4]  ; eax = lst[i]
+        cdqe                         ; sign extend eax to rax
+        add qword [sumSeven], rax    ; add lst[i] to sumSeven
+        checkSeven:
+
+        ; check if divisible by 12
+        mov eax, dword [lst + r8*4] ; eax = lst[i]
+        cdq                          ; sign extend eax to eax:edx
+        mov ecx, 12                  ; divisor is now 12
+        idiv ecx                     ; divide eax:edx by ecx
+        cmp edx, 0                   ; check if remainder = 0
+        jne checkTwelve              ; if remainder != 0
+
+        ; if IS divisible by twelve
+        inc qword [countTwelve]      ; increment countTwelve
+        mov eax, dword [lst + r8*4]  ; eax = lst[i]
+        cdqe                         ; sign extend eax to rax
+        add qword [sumTwelve], rax   ; add lst[i] to sumTwelve
+        checkTwelve:
+        
+        ; find sum
+        mov eax, dword [lst + r8*4]  ; eax = lst[i]
+        cdqe                         ; extend eax to rax
+        add rbx, rax                 ; add arr[i] to sum
+
+        ; increment value of i
+        inc r8 ; i++
+
+        ; jump back to top of loop
+        jmp sumLoop
+    done:
+
+    ; set sum
+    mov qword [sum], rbx     ; store rbx in sum
+                                     
+    ; find average
+    mov rax, rbx             ; move rbx (sum) into rax so it can be divided
+    cqo                      ; sign extend rax to rax:rdx
+    mov ecx, [len]           ; move length into ecx
+    idiv ecx                 ; divide eax / ecx
+    mov qword [average], rax ; move eax into avg
+
+    ; find estMedian
+    ; since len = 68 & arrays are 0 indexed,
+    ; middle values are 33, 34, and last is 67
+    mov eax, dword [lst]        ; first value in array
+    mov ecx, dword [lst + 33*4] ; first middle value
+    add eax, ecx                ; add first value and first middle
+    mov ecx, dword [lst + 34*4] ; second middle value
+    add eax, ecx                ; add second middle value to other values
+    mov ecx, dword [lst + 67*4] ; last value
+    add eax, ecx                ; add last value to other values
+    ; eax holds the sum of the 4 values
+    cdq                         ; sign extend to eax:edx
+    mov ecx, 4                  ; divisor is now 4
+    idiv ecx                    ; divide eax:edx by 4
+    mov dword [estMedian], eax  ; move quotient into median
+
+    ; find 7 average
+    mov rax, qword [sumSeven]     ; move sum of sevens into rax
+    cqo                           ; extend rax to rax:rdx
+    mov rcx, qword [countSeven]   ; move seven count into rbx
+    idiv rcx                      ; divide rax:rdx by seven count
+    mov qword [averageSeven], rax ; move quotient into averageSeven
+
+    ; find 12 average
+    mov rax, qword [sumTwelve]     ; move sum of twelves into rax
+    cqo                            ; extend rax to rax:rdx
+    mov rcx, qword [countTwelve]   ; move twelve count into rbx
+    idiv rcx                       ; divide rax:rdx by twelve count
+    mov qword [averageTwelve], rax ; move quotient into averageTwelve
+
 
 
 ; ***************************************************
