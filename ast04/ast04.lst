@@ -1,0 +1,1163 @@
+     1                                 %line 1+1 ast04.asm
+     2                                 
+     3                                 
+     4                                 
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 %line 56+1 ast04.asm
+    13                                 
+    14                                 
+    15                                 %line 77+1 ast04.asm
+    16                                 
+    17                                 %line 115+1 ast04.asm
+    18                                 
+    19                                 %line 137+1 ast04.asm
+    20                                 
+    21                                 %line 156+1 ast04.asm
+    22                                 
+    23                                 %line 275+1 ast04.asm
+    24                                 
+    25                                 %line 286+1 ast04.asm
+    26                                 
+    27                                 
+    28                                 %line 299+1 ast04.asm
+    29                                 
+    30                                 %line 339+1 ast04.asm
+    31                                 
+    32                                 
+    33                                 [section .data]
+    34                                 
+    35                                 
+    36                                 
+    37                                  NULL equ 0
+    38                                  TRUE equ 1
+    39                                  FALSE equ 0
+    40                                  NEWLINE equ 10
+    41                                 
+    42                                  EXIT_SUCCESS equ 0
+    43                                  SYS_exit equ 60
+    44                                 
+    45 00000000 0A00                    nlMessage db NEWLINE, NULL
+    46 00000002 2000                    spaceMsg db " ", NULL
+    47 00000004 2D00                    negSign db "-", NULL
+    48 00000006 6E756D626572203D20-     numberMsg db "number = ", NULL
+    49 00000006 00                 
+    50 00000010 6E756D62657232203D-     number2Msg db "number2 = ", NULL
+    51 00000010 2000               
+    52 0000001B 6C656E677468203D20-     lengthMsg db "length = ", NULL
+    53 0000001B 00                 
+    54                                 
+    55 00000025 01                      endOfLineNum db TRUE
+    56 00000026 01                      endOfLineStr db TRUE
+    57                                 
+    58 00000027 4132334B464700          number db "A23KFG", NULL
+    59 0000002E 0000000000000000        convertednum dq 0
+    60                                 
+    61 00000036 626338303933693200      number2 db "bc8093i2", NULL
+    62 0000003F 0000000000000000        convertednum2 dq 0
+    63                                 
+    64 00000047 00                      length db 0
+    65                                 
+    66                                 
+    67                                 [section .bss]
+    68                                 
+    69                                 [section .text]
+    70                                 
+    71                                 [global _start]
+    72                                 _start:
+    73                                 
+    74                                 
+    75                                 
+    76                                 %line 380+0 ast04.asm
+    77 00000000 48C7C000000000          mov rax, 0
+    78 00000007 48C7C700000000          mov rdi, 0
+    79 0000000E 48C7C600000000          mov rsi, 0
+    80 00000015 48C7C215000000          mov rdx, 21
+    81                                 
+    82                                  ..@4.startUnvConversion:
+    83 0000001C 408AB7[00000000]        mov sil, byte [number + rdi]
+    84 00000023 4080FE00                cmp sil, 0
+    85 00000027 742E                    je ..@4.endUnvConversion
+    86                                 
+    87                                 
+    88 00000029 4080FE39                cmp sil, '9'
+    89 0000002D 7E0E                    jle ..@4.isNumber
+    90                                 
+    91                                 
+    92 0000002F 4080FE5A                cmp sil, 'Z'
+    93 00000033 7E0E                    jle ..@4.isUppercase
+    94                                 
+    95                                 
+    96                                  ..@4.isLowercase:
+    97 00000035 4080EE61                sub sil, 'a'
+    98 00000039 4080C60A                add sil, 10
+    99 0000003D EB0C                    jmp ..@4.unvConvert
+   100                                 
+   101                                 
+   102                                  ..@4.isNumber
+   103 0000003F 4080EE30                sub sil, '0'
+   104 00000043 EB06                    jmp ..@4.unvConvert
+   105                                 
+   106                                 
+   107                                  ..@4.isUppercase
+   108 00000045 4080EE41                sub sil, 'A'
+   109 00000049 4080C60A                add sil, 10
+   110                                 
+   111                                  ..@4.unvConvert:
+   112 0000004D 480FAFC2                imul rax, rdx
+   113 00000051 4801F0                  add rax, rsi
+   114                                 
+   115                                 
+   116 00000054 48FFC7                  inc rdi
+   117 00000057 EBC1                    jmp ..@4.startUnvConversion
+   118                                  ..@4.endUnvConversion:
+   119                                 %line 381+1 ast04.asm
+   120 00000059 48890425[00000000]      mov qword [convertednum], rax
+   121                                 
+   122                                 %line 382+0 ast04.asm
+   123 00000061 48C7C000000000          mov rax, 0
+   124 00000068 48C7C700000000          mov rdi, 0
+   125 0000006F 48C7C600000000          mov rsi, 0
+   126 00000076 48C7C215000000          mov rdx, 21
+   127                                 
+   128                                  ..@5.startUnvConversion:
+   129 0000007D 408AB7[00000000]        mov sil, byte [number2 + rdi]
+   130 00000084 4080FE00                cmp sil, 0
+   131 00000088 742E                    je ..@5.endUnvConversion
+   132                                 
+   133                                 
+   134 0000008A 4080FE39                cmp sil, '9'
+   135 0000008E 7E0E                    jle ..@5.isNumber
+   136                                 
+   137                                 
+   138 00000090 4080FE5A                cmp sil, 'Z'
+   139 00000094 7E0E                    jle ..@5.isUppercase
+   140                                 
+   141                                 
+   142                                  ..@5.isLowercase:
+   143 00000096 4080EE61                sub sil, 'a'
+   144 0000009A 4080C60A                add sil, 10
+   145 0000009E EB0C                    jmp ..@5.unvConvert
+   146                                 
+   147                                 
+   148                                  ..@5.isNumber
+   149 000000A0 4080EE30                sub sil, '0'
+   150 000000A4 EB06                    jmp ..@5.unvConvert
+   151                                 
+   152                                 
+   153                                  ..@5.isUppercase
+   154 000000A6 4080EE41                sub sil, 'A'
+   155 000000AA 4080C60A                add sil, 10
+   156                                 
+   157                                  ..@5.unvConvert:
+   158 000000AE 480FAFC2                imul rax, rdx
+   159 000000B2 4801F0                  add rax, rsi
+   160                                 
+   161                                 
+   162 000000B5 48FFC7                  inc rdi
+   163 000000B8 EBC1                    jmp ..@5.startUnvConversion
+   164                                  ..@5.endUnvConversion:
+   165                                 %line 383+1 ast04.asm
+   166 000000BA 48890425[00000000]      mov qword [convertednum2], rax
+   167                                 
+   168                                 %line 384+0 ast04.asm
+   169 000000C2 48C7C000000000          mov rax, 0
+   170 000000C9 48C7C700000000          mov rdi, 0
+   171 000000D0 48C7C600000000          mov rsi, 0
+   172                                  ..@6.lengthLoop:
+   173 000000D7 408AB7[00000000]        mov sil, byte [number + rdi]
+   174 000000DE 4080FE00                cmp sil, 0
+   175 000000E2 7403                    je ..@6.endLengthLoop
+   176                                 
+   177                                 
+   178 000000E4 48FFC7                  inc rdi
+   179 000000E7 EBEC                    jmp ..@6.lengthLoop
+   180                                 
+   181                                  ..@6.endLengthLoop:
+   182                                 
+   183 000000E9 4889F8                  mov rax, rdi
+   184 000000EC 48FFC0                  inc rax
+   185                                 %line 385+1 ast04.asm
+   186 000000EF 880425[00000000]        mov byte [length], al
+   187                                 
+   188                                  printsForCodeGrade:
+   189                                 
+   190 000000F6 48C70425[00000000]-     mov qword[endOfLineStr], FALSE
+   191 000000F6 00000000           
+   192                                 
+   193                                 %line 390+0 ast04.asm
+   194                                 
+   195                                 
+   196                                 
+   197                                 
+   198                                 
+   199                                 
+   200                                 
+   201 00000102 50                      push rax
+   202 00000103 53                      push rbx
+   203 00000104 51                      push rcx
+   204 00000105 52                      push rdx
+   205 00000106 56                      push rsi
+   206 00000107 57                      push rdi
+   207 00000108 4150                    push r8
+   208 0000010A 4151                    push r9
+   209 0000010C 4152                    push r10
+   210 0000010E 4153                    push r11
+   211 00000110 4154                    push r12
+   212 00000112 4155                    push r13
+   213 00000114 4156                    push r14
+   214 00000116 4157                    push r15
+   215 00000118 55                      push rbp
+   216                                 
+   217                                 
+   218 00000119 48C7C001000000          mov rax, 1
+   219 00000120 48C7C701000000          mov rdi, 1
+   220 00000127 48C7C6[00000000]        mov rsi, numberMsg
+   221 0000012E 48C7C200000000          mov rdx, 0
+   222                                  ..@9.startLoop2:
+   223                                 
+   224 00000135 80BA[00000000]00        cmp byte[numberMsg+rdx], NULL
+   225 0000013C 7403                    je ..@9.endLoop2
+   226 0000013E 48FFC2                  inc rdx
+   227 00000141 EBF0                    jmp ..@9.startLoop2
+   228                                  ..@9.endLoop2:
+   229                                 
+   230 00000143 0F05                    syscall
+   231                                 
+   232                                 
+   233                                 
+   234 00000145 48833C25[00000000]-     cmp qword[endOfLineStr], 0
+   235 00000145 00                 
+   236 0000014E 0F847C000000            je ..@7.noMorePrints
+   237                                 
+   238                                 
+   239 00000154 48833C25[00000000]-     cmp qword[endOfLineStr], 1
+   240 00000154 01                 
+   241 0000015D 754C                    jne ..@7.spacePrint
+   242                                 
+   243                                 
+   244                                 
+   245                                 
+   246 0000015F 50                      push rax
+   247 00000160 53                      push rbx
+   248 00000161 51                      push rcx
+   249 00000162 52                      push rdx
+   250 00000163 56                      push rsi
+   251 00000164 57                      push rdi
+   252 00000165 4150                    push r8
+   253 00000167 4151                    push r9
+   254 00000169 4152                    push r10
+   255 0000016B 4153                    push r11
+   256 0000016D 4154                    push r12
+   257 0000016F 4155                    push r13
+   258 00000171 4156                    push r14
+   259 00000173 4157                    push r15
+   260 00000175 55                      push rbp
+   261                                 
+   262 00000176 48C7C001000000          mov rax, 1
+   263 0000017D 48C7C701000000          mov rdi, 1
+   264 00000184 48C7C6[00000000]        mov rsi, nlMessage
+   265 0000018B 48C7C201000000          mov rdx, 1
+   266 00000192 0F05                    syscall
+   267                                 
+   268 00000194 5D                      pop rbp
+   269 00000195 415F                    pop r15
+   270 00000197 415E                    pop r14
+   271 00000199 415D                    pop r13
+   272 0000019B 415C                    pop r12
+   273 0000019D 415B                    pop r11
+   274 0000019F 415A                    pop r10
+   275 000001A1 4159                    pop r9
+   276 000001A3 4158                    pop r8
+   277 000001A5 5F                      pop rdi
+   278 000001A6 5E                      pop rsi
+   279 000001A7 5A                      pop rdx
+   280 000001A8 59                      pop rcx
+   281 000001A9 5B                      pop rbx
+   282 000001AA 58                      pop rax
+   283 000001AB EB27                    jmp ..@7.noMorePrints
+   284                                 
+   285                                 
+   286                                  ..@7.spacePrint:
+   287 000001AD 48833C25[00000000]-     cmp qword[endOfLineStr], 2
+   288 000001AD 02                 
+   289 000001B6 751C                    jne ..@7.noMorePrints
+   290 000001B8 48C7C001000000          mov rax, 1
+   291 000001BF 48C7C701000000          mov rdi, 1
+   292 000001C6 48C7C6[00000000]        mov rsi, spaceMsg
+   293 000001CD 48C7C201000000          mov rdx, 1
+   294 000001D4 0F05                    syscall
+   295                                 
+   296                                  ..@7.noMorePrints:
+   297                                 
+   298                                 
+   299 000001D6 5D                      pop rbp
+   300 000001D7 415F                    pop r15
+   301 000001D9 415E                    pop r14
+   302 000001DB 415D                    pop r13
+   303 000001DD 415C                    pop r12
+   304 000001DF 415B                    pop r11
+   305 000001E1 415A                    pop r10
+   306 000001E3 4159                    pop r9
+   307 000001E5 4158                    pop r8
+   308 000001E7 5F                      pop rdi
+   309 000001E8 5E                      pop rsi
+   310 000001E9 5A                      pop rdx
+   311 000001EA 59                      pop rcx
+   312 000001EB 5B                      pop rbx
+   313 000001EC 58                      pop rax
+   314                                 %line 391+1 ast04.asm
+   315 000001ED 48C70425[00000000]-     mov qword[endOfLineNum], TRUE
+   316 000001ED 01000000           
+   317                                 
+   318                                 %line 392+0 ast04.asm
+   319                                 
+   320                                 
+   321                                 
+   322                                 
+   323                                 
+   324                                 
+   325                                 
+   326                                 
+   327 000001F9 50                      push rax
+   328 000001FA 53                      push rbx
+   329 000001FB 51                      push rcx
+   330 000001FC 52                      push rdx
+   331 000001FD 56                      push rsi
+   332 000001FE 57                      push rdi
+   333 000001FF 4150                    push r8
+   334 00000201 4151                    push r9
+   335 00000203 4152                    push r10
+   336 00000205 4153                    push r11
+   337 00000207 4154                    push r12
+   338 00000209 4155                    push r13
+   339 0000020B 4156                    push r14
+   340 0000020D 4157                    push r15
+   341 0000020F 55                      push rbp
+   342 00000210 488B0425[00000000]      mov rax, qword[convertednum]
+   343 00000218 49C7C200000000          mov r10, 0
+   344 0000021F 49C7C30A000000          mov r11, 10
+   345 00000226 49C7C608000000          mov r14, 8
+   346 0000022D 49C7C700000000          mov r15, 0
+   347 00000234 48C7C6FFFFFFFF          mov rsi, -1
+   348                                 
+   349                                  ..@14.startConversion:
+   350 0000023B 4883F800                cmp rax, 0
+   351 0000023F 7424                    je ..@14.printNumberInternal
+   352                                 
+   353 00000241 4883F800                cmp rax, 0
+   354 00000245 7C12                    jl ..@14.negativeDivision
+   355                                 
+   356                                 
+   357                                 
+   358 00000247 48C7C200000000          mov rdx, 0
+   359 0000024E 49F7F3                  div r11
+   360 00000251 4883C230                add rdx, 48
+   361 00000255 52                      push rdx
+   362 00000256 49FFC2                  inc r10
+   363 00000259 EBDE                    jmp ..@14.startConversion
+   364                                 
+   365                                  ..@14.negativeDivision:
+   366                                 
+   367 0000025B 49C7C701000000          mov r15, 1
+   368 00000262 48F7EE                  imul rsi
+   369 00000265 EBD2                    jmp ..@14.startConversion
+   370                                  ..@14.printNumberInternal:
+   371 00000267 4983FF00                cmp r15, 0
+   372 0000026B 741C                    je ..@14.noNegative
+   373                                 
+   374 0000026D 48C7C001000000          mov rax, 1
+   375 00000274 48C7C701000000          mov rdi, 1
+   376 0000027B 48C7C6[00000000]        mov rsi, negSign
+   377 00000282 48C7C201000000          mov rdx, 1
+   378 00000289 0F05                    syscall
+   379                                 
+   380                                  ..@14.noNegative:
+   381 0000028B 4983FA00                cmp r10, 0
+   382 0000028F 7527                    jne ..@14.printNumberInteral2
+   383                                 
+   384                                 
+   385                                 
+   386                                 
+   387 00000291 4983C230                add r10, 48
+   388 00000295 4152                    push r10
+   389                                 
+   390 00000297 48C7C001000000          mov rax, 1
+   391 0000029E 48C7C701000000          mov rdi, 1
+   392 000002A5 488D3424                lea rsi, qword[rsp]
+   393 000002A9 48C7C201000000          mov rdx, 1
+   394 000002B0 0F05                    syscall
+   395                                 
+   396 000002B2 415A                    pop r10
+   397 000002B4 4983EA30                sub r10, 48
+   398 000002B8 EB2B                    jmp ..@14.finalChecks
+   399                                 
+   400                                  ..@14.printNumberInteral2:
+   401                                 
+   402 000002BA 49C7C000000000          mov r8, 0
+   403 000002C1 4D89D5                  mov r13, r10
+   404                                  ..@14.printTillEnd:
+   405                                 
+   406 000002C4 48C7C001000000          mov rax, 1
+   407 000002CB 48C7C701000000          mov rdi, 1
+   408 000002D2 4A8D34C4                lea rsi, qword[rsp+r8*8]
+   409 000002D6 48C7C201000000          mov rdx, 1
+   410 000002DD 0F05                    syscall
+   411                                 
+   412                                 
+   413 000002DF 49FFC0                  inc r8
+   414                                 
+   415 000002E2 4D39E8                  cmp r8, r13
+   416 000002E5 7CDB                    jl ..@14.printTillEnd
+   417                                 
+   418                                  ..@14.finalChecks:
+   419                                 
+   420                                 
+   421                                 
+   422 000002E7 48833C25[00000000]-     cmp qword[endOfLineNum], 0
+   423 000002E7 00                 
+   424 000002F0 0F8480000000            je ..@14.noMorePrints
+   425                                 
+   426                                 
+   427 000002F6 48833C25[00000000]-     cmp qword[endOfLineNum], 1
+   428 000002F6 01                 
+   429 000002FF 754C                    jne ..@14.spacePrint
+   430                                 
+   431                                 
+   432                                 
+   433                                 
+   434 00000301 50                      push rax
+   435 00000302 53                      push rbx
+   436 00000303 51                      push rcx
+   437 00000304 52                      push rdx
+   438 00000305 56                      push rsi
+   439 00000306 57                      push rdi
+   440 00000307 4150                    push r8
+   441 00000309 4151                    push r9
+   442 0000030B 4152                    push r10
+   443 0000030D 4153                    push r11
+   444 0000030F 4154                    push r12
+   445 00000311 4155                    push r13
+   446 00000313 4156                    push r14
+   447 00000315 4157                    push r15
+   448 00000317 55                      push rbp
+   449                                 
+   450 00000318 48C7C001000000          mov rax, 1
+   451 0000031F 48C7C701000000          mov rdi, 1
+   452 00000326 48C7C6[00000000]        mov rsi, nlMessage
+   453 0000032D 48C7C201000000          mov rdx, 1
+   454 00000334 0F05                    syscall
+   455                                 
+   456 00000336 5D                      pop rbp
+   457 00000337 415F                    pop r15
+   458 00000339 415E                    pop r14
+   459 0000033B 415D                    pop r13
+   460 0000033D 415C                    pop r12
+   461 0000033F 415B                    pop r11
+   462 00000341 415A                    pop r10
+   463 00000343 4159                    pop r9
+   464 00000345 4158                    pop r8
+   465 00000347 5F                      pop rdi
+   466 00000348 5E                      pop rsi
+   467 00000349 5A                      pop rdx
+   468 0000034A 59                      pop rcx
+   469 0000034B 5B                      pop rbx
+   470 0000034C 58                      pop rax
+   471 0000034D EB2B                    jmp ..@14.noMorePrints
+   472                                 
+   473                                 
+   474                                  ..@14.spacePrint:
+   475 0000034F 48833C25[00000000]-     cmp qword[endOfLineNum], 2
+   476 0000034F 02                 
+   477 00000358 7520                    jne ..@14.noMorePrints
+   478 0000035A 4152                    push r10
+   479                                 
+   480                                 
+   481 0000035C 48C7C001000000          mov rax, 1
+   482 00000363 48C7C701000000          mov rdi, 1
+   483 0000036A 48C7C6[00000000]        mov rsi, spaceMsg
+   484 00000371 48C7C201000000          mov rdx, 1
+   485 00000378 0F05                    syscall
+   486 0000037A 415A                    pop r10
+   487                                 
+   488                                  ..@14.noMorePrints:
+   489                                 
+   490 0000037C 4C89D0                  mov rax, r10
+   491 0000037F 49F7E6                  mul r14
+   492 00000382 4801C4                  add rsp, rax
+   493                                  ..@14.endProgram_macro:
+   494                                 
+   495 00000385 5D                      pop rbp
+   496 00000386 415F                    pop r15
+   497 00000388 415E                    pop r14
+   498 0000038A 415D                    pop r13
+   499 0000038C 415C                    pop r12
+   500 0000038E 415B                    pop r11
+   501 00000390 415A                    pop r10
+   502 00000392 4159                    pop r9
+   503 00000394 4158                    pop r8
+   504 00000396 5F                      pop rdi
+   505 00000397 5E                      pop rsi
+   506 00000398 5A                      pop rdx
+   507 00000399 59                      pop rcx
+   508 0000039A 5B                      pop rbx
+   509 0000039B 58                      pop rax
+   510                                 %line 393+1 ast04.asm
+   511                                 
+   512 0000039C 48C70425[00000000]-     mov qword[endOfLineStr], FALSE
+   513 0000039C 00000000           
+   514                                 
+   515                                 %line 395+0 ast04.asm
+   516                                 
+   517                                 
+   518                                 
+   519                                 
+   520                                 
+   521                                 
+   522                                 
+   523 000003A8 50                      push rax
+   524 000003A9 53                      push rbx
+   525 000003AA 51                      push rcx
+   526 000003AB 52                      push rdx
+   527 000003AC 56                      push rsi
+   528 000003AD 57                      push rdi
+   529 000003AE 4150                    push r8
+   530 000003B0 4151                    push r9
+   531 000003B2 4152                    push r10
+   532 000003B4 4153                    push r11
+   533 000003B6 4154                    push r12
+   534 000003B8 4155                    push r13
+   535 000003BA 4156                    push r14
+   536 000003BC 4157                    push r15
+   537 000003BE 55                      push rbp
+   538                                 
+   539                                 
+   540 000003BF 48C7C001000000          mov rax, 1
+   541 000003C6 48C7C701000000          mov rdi, 1
+   542 000003CD 48C7C6[00000000]        mov rsi, number2Msg
+   543 000003D4 48C7C200000000          mov rdx, 0
+   544                                  ..@22.startLoop2:
+   545                                 
+   546 000003DB 80BA[00000000]00        cmp byte[number2Msg+rdx], NULL
+   547 000003E2 7403                    je ..@22.endLoop2
+   548 000003E4 48FFC2                  inc rdx
+   549 000003E7 EBF0                    jmp ..@22.startLoop2
+   550                                  ..@22.endLoop2:
+   551                                 
+   552 000003E9 0F05                    syscall
+   553                                 
+   554                                 
+   555                                 
+   556 000003EB 48833C25[00000000]-     cmp qword[endOfLineStr], 0
+   557 000003EB 00                 
+   558 000003F4 0F847C000000            je ..@20.noMorePrints
+   559                                 
+   560                                 
+   561 000003FA 48833C25[00000000]-     cmp qword[endOfLineStr], 1
+   562 000003FA 01                 
+   563 00000403 754C                    jne ..@20.spacePrint
+   564                                 
+   565                                 
+   566                                 
+   567                                 
+   568 00000405 50                      push rax
+   569 00000406 53                      push rbx
+   570 00000407 51                      push rcx
+   571 00000408 52                      push rdx
+   572 00000409 56                      push rsi
+   573 0000040A 57                      push rdi
+   574 0000040B 4150                    push r8
+   575 0000040D 4151                    push r9
+   576 0000040F 4152                    push r10
+   577 00000411 4153                    push r11
+   578 00000413 4154                    push r12
+   579 00000415 4155                    push r13
+   580 00000417 4156                    push r14
+   581 00000419 4157                    push r15
+   582 0000041B 55                      push rbp
+   583                                 
+   584 0000041C 48C7C001000000          mov rax, 1
+   585 00000423 48C7C701000000          mov rdi, 1
+   586 0000042A 48C7C6[00000000]        mov rsi, nlMessage
+   587 00000431 48C7C201000000          mov rdx, 1
+   588 00000438 0F05                    syscall
+   589                                 
+   590 0000043A 5D                      pop rbp
+   591 0000043B 415F                    pop r15
+   592 0000043D 415E                    pop r14
+   593 0000043F 415D                    pop r13
+   594 00000441 415C                    pop r12
+   595 00000443 415B                    pop r11
+   596 00000445 415A                    pop r10
+   597 00000447 4159                    pop r9
+   598 00000449 4158                    pop r8
+   599 0000044B 5F                      pop rdi
+   600 0000044C 5E                      pop rsi
+   601 0000044D 5A                      pop rdx
+   602 0000044E 59                      pop rcx
+   603 0000044F 5B                      pop rbx
+   604 00000450 58                      pop rax
+   605 00000451 EB27                    jmp ..@20.noMorePrints
+   606                                 
+   607                                 
+   608                                  ..@20.spacePrint:
+   609 00000453 48833C25[00000000]-     cmp qword[endOfLineStr], 2
+   610 00000453 02                 
+   611 0000045C 751C                    jne ..@20.noMorePrints
+   612 0000045E 48C7C001000000          mov rax, 1
+   613 00000465 48C7C701000000          mov rdi, 1
+   614 0000046C 48C7C6[00000000]        mov rsi, spaceMsg
+   615 00000473 48C7C201000000          mov rdx, 1
+   616 0000047A 0F05                    syscall
+   617                                 
+   618                                  ..@20.noMorePrints:
+   619                                 
+   620                                 
+   621 0000047C 5D                      pop rbp
+   622 0000047D 415F                    pop r15
+   623 0000047F 415E                    pop r14
+   624 00000481 415D                    pop r13
+   625 00000483 415C                    pop r12
+   626 00000485 415B                    pop r11
+   627 00000487 415A                    pop r10
+   628 00000489 4159                    pop r9
+   629 0000048B 4158                    pop r8
+   630 0000048D 5F                      pop rdi
+   631 0000048E 5E                      pop rsi
+   632 0000048F 5A                      pop rdx
+   633 00000490 59                      pop rcx
+   634 00000491 5B                      pop rbx
+   635 00000492 58                      pop rax
+   636                                 %line 396+1 ast04.asm
+   637 00000493 48C70425[00000000]-     mov qword[endOfLineNum], TRUE
+   638 00000493 01000000           
+   639                                 
+   640                                 %line 397+0 ast04.asm
+   641                                 
+   642                                 
+   643                                 
+   644                                 
+   645                                 
+   646                                 
+   647                                 
+   648                                 
+   649 0000049F 50                      push rax
+   650 000004A0 53                      push rbx
+   651 000004A1 51                      push rcx
+   652 000004A2 52                      push rdx
+   653 000004A3 56                      push rsi
+   654 000004A4 57                      push rdi
+   655 000004A5 4150                    push r8
+   656 000004A7 4151                    push r9
+   657 000004A9 4152                    push r10
+   658 000004AB 4153                    push r11
+   659 000004AD 4154                    push r12
+   660 000004AF 4155                    push r13
+   661 000004B1 4156                    push r14
+   662 000004B3 4157                    push r15
+   663 000004B5 55                      push rbp
+   664 000004B6 488B0425[00000000]      mov rax, qword[convertednum2]
+   665 000004BE 49C7C200000000          mov r10, 0
+   666 000004C5 49C7C30A000000          mov r11, 10
+   667 000004CC 49C7C608000000          mov r14, 8
+   668 000004D3 49C7C700000000          mov r15, 0
+   669 000004DA 48C7C6FFFFFFFF          mov rsi, -1
+   670                                 
+   671                                  ..@27.startConversion:
+   672 000004E1 4883F800                cmp rax, 0
+   673 000004E5 7424                    je ..@27.printNumberInternal
+   674                                 
+   675 000004E7 4883F800                cmp rax, 0
+   676 000004EB 7C12                    jl ..@27.negativeDivision
+   677                                 
+   678                                 
+   679                                 
+   680 000004ED 48C7C200000000          mov rdx, 0
+   681 000004F4 49F7F3                  div r11
+   682 000004F7 4883C230                add rdx, 48
+   683 000004FB 52                      push rdx
+   684 000004FC 49FFC2                  inc r10
+   685 000004FF EBDE                    jmp ..@27.startConversion
+   686                                 
+   687                                  ..@27.negativeDivision:
+   688                                 
+   689 00000501 49C7C701000000          mov r15, 1
+   690 00000508 48F7EE                  imul rsi
+   691 0000050B EBD2                    jmp ..@27.startConversion
+   692                                  ..@27.printNumberInternal:
+   693 0000050D 4983FF00                cmp r15, 0
+   694 00000511 741C                    je ..@27.noNegative
+   695                                 
+   696 00000513 48C7C001000000          mov rax, 1
+   697 0000051A 48C7C701000000          mov rdi, 1
+   698 00000521 48C7C6[00000000]        mov rsi, negSign
+   699 00000528 48C7C201000000          mov rdx, 1
+   700 0000052F 0F05                    syscall
+   701                                 
+   702                                  ..@27.noNegative:
+   703 00000531 4983FA00                cmp r10, 0
+   704 00000535 7527                    jne ..@27.printNumberInteral2
+   705                                 
+   706                                 
+   707                                 
+   708                                 
+   709 00000537 4983C230                add r10, 48
+   710 0000053B 4152                    push r10
+   711                                 
+   712 0000053D 48C7C001000000          mov rax, 1
+   713 00000544 48C7C701000000          mov rdi, 1
+   714 0000054B 488D3424                lea rsi, qword[rsp]
+   715 0000054F 48C7C201000000          mov rdx, 1
+   716 00000556 0F05                    syscall
+   717                                 
+   718 00000558 415A                    pop r10
+   719 0000055A 4983EA30                sub r10, 48
+   720 0000055E EB2B                    jmp ..@27.finalChecks
+   721                                 
+   722                                  ..@27.printNumberInteral2:
+   723                                 
+   724 00000560 49C7C000000000          mov r8, 0
+   725 00000567 4D89D5                  mov r13, r10
+   726                                  ..@27.printTillEnd:
+   727                                 
+   728 0000056A 48C7C001000000          mov rax, 1
+   729 00000571 48C7C701000000          mov rdi, 1
+   730 00000578 4A8D34C4                lea rsi, qword[rsp+r8*8]
+   731 0000057C 48C7C201000000          mov rdx, 1
+   732 00000583 0F05                    syscall
+   733                                 
+   734                                 
+   735 00000585 49FFC0                  inc r8
+   736                                 
+   737 00000588 4D39E8                  cmp r8, r13
+   738 0000058B 7CDB                    jl ..@27.printTillEnd
+   739                                 
+   740                                  ..@27.finalChecks:
+   741                                 
+   742                                 
+   743                                 
+   744 0000058D 48833C25[00000000]-     cmp qword[endOfLineNum], 0
+   745 0000058D 00                 
+   746 00000596 0F8480000000            je ..@27.noMorePrints
+   747                                 
+   748                                 
+   749 0000059C 48833C25[00000000]-     cmp qword[endOfLineNum], 1
+   750 0000059C 01                 
+   751 000005A5 754C                    jne ..@27.spacePrint
+   752                                 
+   753                                 
+   754                                 
+   755                                 
+   756 000005A7 50                      push rax
+   757 000005A8 53                      push rbx
+   758 000005A9 51                      push rcx
+   759 000005AA 52                      push rdx
+   760 000005AB 56                      push rsi
+   761 000005AC 57                      push rdi
+   762 000005AD 4150                    push r8
+   763 000005AF 4151                    push r9
+   764 000005B1 4152                    push r10
+   765 000005B3 4153                    push r11
+   766 000005B5 4154                    push r12
+   767 000005B7 4155                    push r13
+   768 000005B9 4156                    push r14
+   769 000005BB 4157                    push r15
+   770 000005BD 55                      push rbp
+   771                                 
+   772 000005BE 48C7C001000000          mov rax, 1
+   773 000005C5 48C7C701000000          mov rdi, 1
+   774 000005CC 48C7C6[00000000]        mov rsi, nlMessage
+   775 000005D3 48C7C201000000          mov rdx, 1
+   776 000005DA 0F05                    syscall
+   777                                 
+   778 000005DC 5D                      pop rbp
+   779 000005DD 415F                    pop r15
+   780 000005DF 415E                    pop r14
+   781 000005E1 415D                    pop r13
+   782 000005E3 415C                    pop r12
+   783 000005E5 415B                    pop r11
+   784 000005E7 415A                    pop r10
+   785 000005E9 4159                    pop r9
+   786 000005EB 4158                    pop r8
+   787 000005ED 5F                      pop rdi
+   788 000005EE 5E                      pop rsi
+   789 000005EF 5A                      pop rdx
+   790 000005F0 59                      pop rcx
+   791 000005F1 5B                      pop rbx
+   792 000005F2 58                      pop rax
+   793 000005F3 EB2B                    jmp ..@27.noMorePrints
+   794                                 
+   795                                 
+   796                                  ..@27.spacePrint:
+   797 000005F5 48833C25[00000000]-     cmp qword[endOfLineNum], 2
+   798 000005F5 02                 
+   799 000005FE 7520                    jne ..@27.noMorePrints
+   800 00000600 4152                    push r10
+   801                                 
+   802                                 
+   803 00000602 48C7C001000000          mov rax, 1
+   804 00000609 48C7C701000000          mov rdi, 1
+   805 00000610 48C7C6[00000000]        mov rsi, spaceMsg
+   806 00000617 48C7C201000000          mov rdx, 1
+   807 0000061E 0F05                    syscall
+   808 00000620 415A                    pop r10
+   809                                 
+   810                                  ..@27.noMorePrints:
+   811                                 
+   812 00000622 4C89D0                  mov rax, r10
+   813 00000625 49F7E6                  mul r14
+   814 00000628 4801C4                  add rsp, rax
+   815                                  ..@27.endProgram_macro:
+   816                                 
+   817 0000062B 5D                      pop rbp
+   818 0000062C 415F                    pop r15
+   819 0000062E 415E                    pop r14
+   820 00000630 415D                    pop r13
+   821 00000632 415C                    pop r12
+   822 00000634 415B                    pop r11
+   823 00000636 415A                    pop r10
+   824 00000638 4159                    pop r9
+   825 0000063A 4158                    pop r8
+   826 0000063C 5F                      pop rdi
+   827 0000063D 5E                      pop rsi
+   828 0000063E 5A                      pop rdx
+   829 0000063F 59                      pop rcx
+   830 00000640 5B                      pop rbx
+   831 00000641 58                      pop rax
+   832                                 %line 398+1 ast04.asm
+   833                                 
+   834 00000642 48C70425[00000000]-     mov qword[endOfLineStr], FALSE
+   835 00000642 00000000           
+   836                                 
+   837                                 %line 400+0 ast04.asm
+   838                                 
+   839                                 
+   840                                 
+   841                                 
+   842                                 
+   843                                 
+   844                                 
+   845 0000064E 50                      push rax
+   846 0000064F 53                      push rbx
+   847 00000650 51                      push rcx
+   848 00000651 52                      push rdx
+   849 00000652 56                      push rsi
+   850 00000653 57                      push rdi
+   851 00000654 4150                    push r8
+   852 00000656 4151                    push r9
+   853 00000658 4152                    push r10
+   854 0000065A 4153                    push r11
+   855 0000065C 4154                    push r12
+   856 0000065E 4155                    push r13
+   857 00000660 4156                    push r14
+   858 00000662 4157                    push r15
+   859 00000664 55                      push rbp
+   860                                 
+   861                                 
+   862 00000665 48C7C001000000          mov rax, 1
+   863 0000066C 48C7C701000000          mov rdi, 1
+   864 00000673 48C7C6[00000000]        mov rsi, lengthMsg
+   865 0000067A 48C7C200000000          mov rdx, 0
+   866                                  ..@35.startLoop2:
+   867                                 
+   868 00000681 80BA[00000000]00        cmp byte[lengthMsg+rdx], NULL
+   869 00000688 7403                    je ..@35.endLoop2
+   870 0000068A 48FFC2                  inc rdx
+   871 0000068D EBF0                    jmp ..@35.startLoop2
+   872                                  ..@35.endLoop2:
+   873                                 
+   874 0000068F 0F05                    syscall
+   875                                 
+   876                                 
+   877                                 
+   878 00000691 48833C25[00000000]-     cmp qword[endOfLineStr], 0
+   879 00000691 00                 
+   880 0000069A 0F847C000000            je ..@33.noMorePrints
+   881                                 
+   882                                 
+   883 000006A0 48833C25[00000000]-     cmp qword[endOfLineStr], 1
+   884 000006A0 01                 
+   885 000006A9 754C                    jne ..@33.spacePrint
+   886                                 
+   887                                 
+   888                                 
+   889                                 
+   890 000006AB 50                      push rax
+   891 000006AC 53                      push rbx
+   892 000006AD 51                      push rcx
+   893 000006AE 52                      push rdx
+   894 000006AF 56                      push rsi
+   895 000006B0 57                      push rdi
+   896 000006B1 4150                    push r8
+   897 000006B3 4151                    push r9
+   898 000006B5 4152                    push r10
+   899 000006B7 4153                    push r11
+   900 000006B9 4154                    push r12
+   901 000006BB 4155                    push r13
+   902 000006BD 4156                    push r14
+   903 000006BF 4157                    push r15
+   904 000006C1 55                      push rbp
+   905                                 
+   906 000006C2 48C7C001000000          mov rax, 1
+   907 000006C9 48C7C701000000          mov rdi, 1
+   908 000006D0 48C7C6[00000000]        mov rsi, nlMessage
+   909 000006D7 48C7C201000000          mov rdx, 1
+   910 000006DE 0F05                    syscall
+   911                                 
+   912 000006E0 5D                      pop rbp
+   913 000006E1 415F                    pop r15
+   914 000006E3 415E                    pop r14
+   915 000006E5 415D                    pop r13
+   916 000006E7 415C                    pop r12
+   917 000006E9 415B                    pop r11
+   918 000006EB 415A                    pop r10
+   919 000006ED 4159                    pop r9
+   920 000006EF 4158                    pop r8
+   921 000006F1 5F                      pop rdi
+   922 000006F2 5E                      pop rsi
+   923 000006F3 5A                      pop rdx
+   924 000006F4 59                      pop rcx
+   925 000006F5 5B                      pop rbx
+   926 000006F6 58                      pop rax
+   927 000006F7 EB27                    jmp ..@33.noMorePrints
+   928                                 
+   929                                 
+   930                                  ..@33.spacePrint:
+   931 000006F9 48833C25[00000000]-     cmp qword[endOfLineStr], 2
+   932 000006F9 02                 
+   933 00000702 751C                    jne ..@33.noMorePrints
+   934 00000704 48C7C001000000          mov rax, 1
+   935 0000070B 48C7C701000000          mov rdi, 1
+   936 00000712 48C7C6[00000000]        mov rsi, spaceMsg
+   937 00000719 48C7C201000000          mov rdx, 1
+   938 00000720 0F05                    syscall
+   939                                 
+   940                                  ..@33.noMorePrints:
+   941                                 
+   942                                 
+   943 00000722 5D                      pop rbp
+   944 00000723 415F                    pop r15
+   945 00000725 415E                    pop r14
+   946 00000727 415D                    pop r13
+   947 00000729 415C                    pop r12
+   948 0000072B 415B                    pop r11
+   949 0000072D 415A                    pop r10
+   950 0000072F 4159                    pop r9
+   951 00000731 4158                    pop r8
+   952 00000733 5F                      pop rdi
+   953 00000734 5E                      pop rsi
+   954 00000735 5A                      pop rdx
+   955 00000736 59                      pop rcx
+   956 00000737 5B                      pop rbx
+   957 00000738 58                      pop rax
+   958                                 %line 401+1 ast04.asm
+   959 00000739 48C70425[00000000]-     mov qword[endOfLineNum], TRUE
+   960 00000739 01000000           
+   961 00000745 4C0FB61425[00000000]      movzx r10, byte[length]
+   962                                 
+   963                                 %line 403+0 ast04.asm
+   964                                 
+   965                                 
+   966                                 
+   967                                 
+   968                                 
+   969                                 
+   970                                 
+   971                                 
+   972 0000074E 50                      push rax
+   973 0000074F 53                      push rbx
+   974 00000750 51                      push rcx
+   975 00000751 52                      push rdx
+   976 00000752 56                      push rsi
+   977 00000753 57                      push rdi
+   978 00000754 4150                    push r8
+   979 00000756 4151                    push r9
+   980 00000758 4152                    push r10
+   981 0000075A 4153                    push r11
+   982 0000075C 4154                    push r12
+   983 0000075E 4155                    push r13
+   984 00000760 4156                    push r14
+   985 00000762 4157                    push r15
+   986 00000764 55                      push rbp
+   987 00000765 4C89D0                  mov rax, r10
+   988 00000768 49C7C200000000          mov r10, 0
+   989 0000076F 49C7C30A000000          mov r11, 10
+   990 00000776 49C7C608000000          mov r14, 8
+   991 0000077D 49C7C700000000          mov r15, 0
+   992 00000784 48C7C6FFFFFFFF          mov rsi, -1
+   993                                 
+   994                                  ..@40.startConversion:
+   995 0000078B 4883F800                cmp rax, 0
+   996 0000078F 7424                    je ..@40.printNumberInternal
+   997                                 
+   998 00000791 4883F800                cmp rax, 0
+   999 00000795 7C12                    jl ..@40.negativeDivision
+  1000                                 
+  1001                                 
+  1002                                 
+  1003 00000797 48C7C200000000          mov rdx, 0
+  1004 0000079E 49F7F3                  div r11
+  1005 000007A1 4883C230                add rdx, 48
+  1006 000007A5 52                      push rdx
+  1007 000007A6 49FFC2                  inc r10
+  1008 000007A9 EBDE                    jmp ..@40.startConversion
+  1009                                 
+  1010                                  ..@40.negativeDivision:
+  1011                                 
+  1012 000007AB 49C7C701000000          mov r15, 1
+  1013 000007B2 48F7EE                  imul rsi
+  1014 000007B5 EBD2                    jmp ..@40.startConversion
+  1015                                  ..@40.printNumberInternal:
+  1016 000007B7 4983FF00                cmp r15, 0
+  1017 000007BB 741C                    je ..@40.noNegative
+  1018                                 
+  1019 000007BD 48C7C001000000          mov rax, 1
+  1020 000007C4 48C7C701000000          mov rdi, 1
+  1021 000007CB 48C7C6[00000000]        mov rsi, negSign
+  1022 000007D2 48C7C201000000          mov rdx, 1
+  1023 000007D9 0F05                    syscall
+  1024                                 
+  1025                                  ..@40.noNegative:
+  1026 000007DB 4983FA00                cmp r10, 0
+  1027 000007DF 7527                    jne ..@40.printNumberInteral2
+  1028                                 
+  1029                                 
+  1030                                 
+  1031                                 
+  1032 000007E1 4983C230                add r10, 48
+  1033 000007E5 4152                    push r10
+  1034                                 
+  1035 000007E7 48C7C001000000          mov rax, 1
+  1036 000007EE 48C7C701000000          mov rdi, 1
+  1037 000007F5 488D3424                lea rsi, qword[rsp]
+  1038 000007F9 48C7C201000000          mov rdx, 1
+  1039 00000800 0F05                    syscall
+  1040                                 
+  1041 00000802 415A                    pop r10
+  1042 00000804 4983EA30                sub r10, 48
+  1043 00000808 EB2B                    jmp ..@40.finalChecks
+  1044                                 
+  1045                                  ..@40.printNumberInteral2:
+  1046                                 
+  1047 0000080A 49C7C000000000          mov r8, 0
+  1048 00000811 4D89D5                  mov r13, r10
+  1049                                  ..@40.printTillEnd:
+  1050                                 
+  1051 00000814 48C7C001000000          mov rax, 1
+  1052 0000081B 48C7C701000000          mov rdi, 1
+  1053 00000822 4A8D34C4                lea rsi, qword[rsp+r8*8]
+  1054 00000826 48C7C201000000          mov rdx, 1
+  1055 0000082D 0F05                    syscall
+  1056                                 
+  1057                                 
+  1058 0000082F 49FFC0                  inc r8
+  1059                                 
+  1060 00000832 4D39E8                  cmp r8, r13
+  1061 00000835 7CDB                    jl ..@40.printTillEnd
+  1062                                 
+  1063                                  ..@40.finalChecks:
+  1064                                 
+  1065                                 
+  1066                                 
+  1067 00000837 48833C25[00000000]-     cmp qword[endOfLineNum], 0
+  1068 00000837 00                 
+  1069 00000840 0F8480000000            je ..@40.noMorePrints
+  1070                                 
+  1071                                 
+  1072 00000846 48833C25[00000000]-     cmp qword[endOfLineNum], 1
+  1073 00000846 01                 
+  1074 0000084F 754C                    jne ..@40.spacePrint
+  1075                                 
+  1076                                 
+  1077                                 
+  1078                                 
+  1079 00000851 50                      push rax
+  1080 00000852 53                      push rbx
+  1081 00000853 51                      push rcx
+  1082 00000854 52                      push rdx
+  1083 00000855 56                      push rsi
+  1084 00000856 57                      push rdi
+  1085 00000857 4150                    push r8
+  1086 00000859 4151                    push r9
+  1087 0000085B 4152                    push r10
+  1088 0000085D 4153                    push r11
+  1089 0000085F 4154                    push r12
+  1090 00000861 4155                    push r13
+  1091 00000863 4156                    push r14
+  1092 00000865 4157                    push r15
+  1093 00000867 55                      push rbp
+  1094                                 
+  1095 00000868 48C7C001000000          mov rax, 1
+  1096 0000086F 48C7C701000000          mov rdi, 1
+  1097 00000876 48C7C6[00000000]        mov rsi, nlMessage
+  1098 0000087D 48C7C201000000          mov rdx, 1
+  1099 00000884 0F05                    syscall
+  1100                                 
+  1101 00000886 5D                      pop rbp
+  1102 00000887 415F                    pop r15
+  1103 00000889 415E                    pop r14
+  1104 0000088B 415D                    pop r13
+  1105 0000088D 415C                    pop r12
+  1106 0000088F 415B                    pop r11
+  1107 00000891 415A                    pop r10
+  1108 00000893 4159                    pop r9
+  1109 00000895 4158                    pop r8
+  1110 00000897 5F                      pop rdi
+  1111 00000898 5E                      pop rsi
+  1112 00000899 5A                      pop rdx
+  1113 0000089A 59                      pop rcx
+  1114 0000089B 5B                      pop rbx
+  1115 0000089C 58                      pop rax
+  1116 0000089D EB2B                    jmp ..@40.noMorePrints
+  1117                                 
+  1118                                 
+  1119                                  ..@40.spacePrint:
+  1120 0000089F 48833C25[00000000]-     cmp qword[endOfLineNum], 2
+  1121 0000089F 02                 
+  1122 000008A8 7520                    jne ..@40.noMorePrints
+  1123 000008AA 4152                    push r10
+  1124                                 
+  1125                                 
+  1126 000008AC 48C7C001000000          mov rax, 1
+  1127 000008B3 48C7C701000000          mov rdi, 1
+  1128 000008BA 48C7C6[00000000]        mov rsi, spaceMsg
+  1129 000008C1 48C7C201000000          mov rdx, 1
+  1130 000008C8 0F05                    syscall
+  1131 000008CA 415A                    pop r10
+  1132                                 
+  1133                                  ..@40.noMorePrints:
+  1134                                 
+  1135 000008CC 4C89D0                  mov rax, r10
+  1136 000008CF 49F7E6                  mul r14
+  1137 000008D2 4801C4                  add rsp, rax
+  1138                                  ..@40.endProgram_macro:
+  1139                                 
+  1140 000008D5 5D                      pop rbp
+  1141 000008D6 415F                    pop r15
+  1142 000008D8 415E                    pop r14
+  1143 000008DA 415D                    pop r13
+  1144 000008DC 415C                    pop r12
+  1145 000008DE 415B                    pop r11
+  1146 000008E0 415A                    pop r10
+  1147 000008E2 4159                    pop r9
+  1148 000008E4 4158                    pop r8
+  1149 000008E6 5F                      pop rdi
+  1150 000008E7 5E                      pop rsi
+  1151 000008E8 5A                      pop rdx
+  1152 000008E9 59                      pop rcx
+  1153 000008EA 5B                      pop rbx
+  1154 000008EB 58                      pop rax
+  1155                                 %line 404+1 ast04.asm
+  1156                                 
+  1157                                 
+  1158                                 
+  1159                                 
+  1160                                  last:
+  1161 000008EC 48C7C03C000000          mov rax, SYS_exit
+  1162 000008F3 48C7C700000000          mov rdi, EXIT_SUCCESS
+  1163 000008FA 0F05                    syscall
