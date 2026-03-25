@@ -323,7 +323,8 @@ _start:
 
     ; YOUR CODE HERE
     
-    
+    ; code for problem 1
+
     ; traverse array lst and get the:
     ; min, max, estMedian, sum, avg
     ; count, sum, avg for numbers divisble by 7
@@ -344,7 +345,7 @@ _start:
         mov eax, 0          ; clear EAX since i made it lst[0]
         mov al, byte [len]  ; move length into AL
         cmp r8, rax         ; check i against array length
-        jge done            ; jump to "done" label if rax >= length
+        jge doneSum            ; jump to "done" label if rax >= length
 
         ; minimum comparison
         mov eax, dword [lst + r8*4] ; make eax = lst[i]
@@ -401,7 +402,7 @@ _start:
 
         ; jump back to top of loop
         jmp sumLoop
-    done:
+    doneSum:
 
     ; set sum
     mov qword [sum], rbx     ; store rbx in sum
@@ -443,6 +444,64 @@ _start:
     idiv rcx                       ; divide rax:rdx by twelve count
     mov qword [averageTwelve], rax ; move quotient into averageTwelve
 
+    ; code for problem 2
+    
+    ; calculate cube area
+    mov r8, 0           ; clear r8
+    mov r8b, byte [len] ; save length in lower r8
+    mov r9, 0           ; use as i 
+    
+    areaCalculation:
+        cmp r9b, r8b ; compare i to length
+        jge doneArea ; jump to end of loop
+
+        ; cubeAreas is qwords, a and b are dwords
+        
+        mov ecx, r9d                           ; move length into ecx
+        add ecx, 1                             ; add 1 to ecx
+
+        mov eax, dword [aSides + r9*4]         ; move aSides[i] into eax
+        mov ebx, dword [bSides + r9*4]         ; move bSides[i] into ebx
+        imul eax, ebx                          ; multiply eax * ebx into eax
+        
+        cdq                                    ; sign extend eax to edx:eax
+        idiv ecx                               ; divide edx:eax by ecx
+        ; rax stores quotient, rdx stores remainder
+        cdqe                                   ; sign extend eax to rax
+
+        mov [cubeAreas + r9*8], rax            ; store the quotient into cubeAreas[i]
+
+        inc r9b                                ; increment i count
+
+        jmp areaCalculation                    ; jump back to the top of loop
+    doneArea:
+
+    ; calculate cube volume
+    mov r8, 0           ; clear r8
+    mov r8b, byte [len] ; save length in lower r8
+    mov r9, 0           ; use as i 
+    
+    volumeCalculation:
+        cmp r9b, r8b       ; compare i to length
+        jge doneVolume     ; jump to end of loop
+
+        ; cubeVolumes is qwords, cubeArea is qwords
+        
+        mov rcx, 1234562                          ; move length into rcx
+
+        mov rax, qword [cubeAreas + r9*8]         ; move cubeAreas[i] into rax
+        mov rbx, qword [cubeAreas + r9*8]         ; move bSides[i] into rbx
+        imul rax, rbx                             ; multiply rax * rbx into rax
+        
+        cqo                                       ; sign extend rax to rdx:rax
+        idiv rcx                                  ; divide rdx:rax by rcx
+
+        mov qword [cubeVolumes + r9*8], rdx       ; store the remainder only (%)
+
+        inc r9b                                   ; increment i count
+
+        jmp volumeCalculation                     ; jump back to the top of loop
+    doneVolume:
 
 
 ; ***************************************************

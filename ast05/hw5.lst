@@ -1,0 +1,283 @@
+     1                                 %line 1+1 hw5.asm
+     2                                 [section .data]
+     3                                 
+     4                                 WALL equ 'x'
+     5                                 GOAL equ 'o'
+     6                                 EMPTY equ ' '
+     7                                 SEARCHED equ '.'
+     8                                 
+     9 00000000 303132333435363738-    DIGITS db "0123456789"
+    10 00000000 39                 
+    11                                 
+    12                                 NULL equ 0
+    13                                 LF equ 10
+    14                                 [global NEW_LINE]
+    15 0000000A 0A0A                   NEW_LINE db LF, LF
+    16                                 
+    17                                 TRUE equ 1
+    18                                 FALSE equ 0
+    19                                 
+    20                                 
+    21                                 SYS_WRITE equ 1
+    22                                 STDOUT equ 1
+    23                                 
+    24                                 
+    25                                 LENGTH1 equ 5
+    26                                 HEIGHT1 equ 5
+    27 0000000C 7878787878             maze1 db "xxxxx",
+    28 00000011 7820786F78              db "x xox",
+    29 00000016 7820782078              db "x x x",
+    30 0000001B 7820202078              db "x   x",
+    31 00000020 7878787878              db "xxxxx"
+    32                                 START_POS_X_1 equ 1
+    33                                 START_POS_Y_1 equ 1
+    34                                 
+    35                                 
+    36                                 LENGTH2 equ 8
+    37                                 HEIGHT2 equ 10
+    38 00000025 7878787878787878       maze2 db "xxxxxxxx",
+    39 0000002D 2020202020782020        db "     x  ",
+    40 00000035 7878787820782078        db "xxxx x x",
+    41 0000003D 7820207820782078        db "x  x x x",
+    42 00000045 786F207820782078        db "xo x x x",
+    43 0000004D 7820207820782078        db "x  x x x",
+    44 00000055 7820207878782078        db "x  xxx x",
+    45 0000005D 7820202020202078        db "x      x",
+    46 00000065 7820202020202078        db "x      x",
+    47 0000006D 7878787878787878        db "xxxxxxxx"
+    48                                 
+    49                                 START_POS_X_2 equ 4
+    50                                 START_POS_Y_2 equ 5
+    51                                 
+    52                                 
+    53                                 LENGTH3 equ 8
+    54                                 HEIGHT3 equ 10
+    55 00000075 7878787878787878       maze3 db "xxxxxxxx",
+    56 0000007D 2020202020202020        db "        ",
+    57 00000085 7878787820782078        db "xxxx x x",
+    58 0000008D 7820207820782078        db "x  x x x",
+    59 00000095 786F207820782078        db "xo x x x",
+    60 0000009D 7820207820782078        db "x  x x x",
+    61 000000A5 7878787878782078        db "xxxxxx x",
+    62 000000AD 7820202020202078        db "x      x",
+    63 000000B5 7820202020202078        db "x      x",
+    64 000000BD 7878787878787878        db "xxxxxxxx"
+    65                                 
+    66                                 START_POS_X_3 equ 4
+    67                                 START_POS_Y_3 equ 5
+    68                                 
+    69                                 
+    70                                 SYS_exit equ 60
+    71                                 EXIT_SUCCESS equ 0
+    72                                 
+    73                                 [section .text]
+    74                                 
+    75                                 
+    76                                 
+    77                                 
+    78                                 
+    79                                 
+    80                                 
+    81                                 
+    82                                 %line 95+1 hw5.asm
+    83                                 
+    84                                 
+    85                                 %line 126+1 hw5.asm
+    86                                 
+    87                                 
+    88                                 
+    89                                 %line 153+1 hw5.asm
+    90                                 
+    91                                 
+    92                                 [global _start]
+    93                                 [global isGoalReachable]
+    94                                 [global int2String]
+    95                                 [extern printInteger]
+    96                                 [extern printMaze]
+    97                                 [extern solveMaze]
+    98                                 [extern convertToLinear]
+    99                                 
+   100                                 
+   101                                 _start:
+   102                                 
+   103                                 
+   104                                 
+   105                                 
+   106 00000000 BF04000000             mov edi, 4
+   107 00000005 E8(F6FFFFFF)           call printInteger
+   108 0000000A 48C7C001000000         mov rax, SYS_WRITE
+   109 00000011 48C7C701000000         mov rdi, STDOUT
+   110 00000018 48C7C6[00000000]       mov rsi, NEW_LINE
+   111 0000001F 48C7C201000000         mov rdx, 1
+   112 00000026 0F05                   syscall
+   113                                 
+   114 00000028 BF0A000000             mov edi, 10
+   115 0000002D E8(F6FFFFFF)           call printInteger
+   116 00000032 48C7C001000000         mov rax, SYS_WRITE
+   117 00000039 48C7C701000000         mov rdi, STDOUT
+   118 00000040 48C7C6[00000000]       mov rsi, NEW_LINE
+   119 00000047 48C7C201000000         mov rdx, 1
+   120 0000004E 0F05                   syscall
+   121                                 
+   122 00000050 BF70010000             mov edi, 368
+   123 00000055 E8(F6FFFFFF)           call printInteger
+   124 0000005A 48C7C001000000         mov rax, SYS_WRITE
+   125 00000061 48C7C701000000         mov rdi, STDOUT
+   126 00000068 48C7C6[00000000]       mov rsi, NEW_LINE
+   127 0000006F 48C7C202000000         mov rdx, 2
+   128 00000076 0F05                   syscall
+   129                                 
+   130                                 afterInt2String:
+   131                                 
+   132                                 
+   133 00000078 48C7C7[00000000]       mov rdi, maze1
+   134 0000007F 48C7C601000000         mov rsi, START_POS_X_1
+   135 00000086 48C7C201000000         mov rdx, START_POS_Y_1
+   136 0000008D 48C7C105000000         mov rcx, LENGTH1
+   137 00000094 49C7C005000000         mov r8, HEIGHT1
+   138 0000009B E8(F6FFFFFF)           call solveMaze
+   139                                 
+   140                                 afterFirstMaze:
+   141                                 
+   142                                 
+   143 000000A0 48C7C7[00000000]       mov rdi, maze2
+   144 000000A7 48C7C604000000         mov rsi, START_POS_X_2
+   145 000000AE 48C7C205000000         mov rdx, START_POS_Y_2
+   146 000000B5 48C7C10A000000         mov rcx, HEIGHT2
+   147 000000BC 49C7C008000000         mov r8, LENGTH2
+   148 000000C3 E8(F6FFFFFF)           call solveMaze
+   149                                 
+   150                                 afterSecondMaze:
+   151                                 
+   152                                 
+   153                                 
+   154                                 
+   155 000000C8 48C7C7[00000000]       mov rdi, maze3
+   156 000000CF 48C7C604000000         mov rsi, START_POS_X_3
+   157 000000D6 48C7C205000000         mov rdx, START_POS_Y_3
+   158 000000DD 48C7C10A000000         mov rcx, HEIGHT3
+   159 000000E4 49C7C008000000         mov r8, LENGTH3
+   160 000000EB E8(F6FFFFFF)           call solveMaze
+   161                                 
+   162                                 
+   163                                 afterThirdMaze:
+   164                                 
+   165                                 
+   166                                 last:
+   167 000000F0 B83C000000              mov eax, SYS_exit
+   168 000000F5 BF00000000              mov edi, EXIT_SUCCESS
+   169 000000FA 0F05                    syscall
+   170                                 
+   171                                 
+   172                                 
+   173                                 
+   174                                 
+   175                                 
+   176                                 
+   177                                 int2String:
+   178                                 
+   179                                 
+   180                                 
+   181 000000FC 4889F8                  mov rax, rdi
+   182                                 
+   183 000000FF 41B80A000000            mov r8d, 10
+   184                                 
+   185 00000105 4889D1                  mov rcx, rdx
+   186                                 
+   187                                  digitsLoop:
+   188                                 
+   189 00000108 4883F800                cmp rax, 0
+   190 0000010C 7414                    je endDigitsLoop
+   191                                 
+   192                                 
+   193 0000010E 48C7C200000000          mov rdx, 0
+   194 00000115 41F7F0                  div r8d
+   195                                 
+   196 00000118 80C230                  add dl, '0'
+   197 0000011B 88540EFF                mov [rsi + rcx - 1], dl
+   198 0000011F 48FFC9                  dec rcx
+   199                                 
+   200 00000122 EBE2                    jmp digitsLoop
+   201                                  endDigitsLoop:
+   202                                 
+   203 00000124 C3                      ret
+   204                                 
+   205                                 
+   206                                 
+   207                                 
+   208                                 
+   209                                 
+   210                                 
+   211                                 
+   212                                 
+   213                                 
+   214                                 isGoalReachable:
+   215                                 
+   216                                 
+   217 00000125 53                      push rbx
+   218 00000126 4154                    push r12
+   219 00000128 4155                    push r13
+   220 0000012A 4156                    push r14
+   221 0000012C 4157                    push r15
+   222                                 
+   223                                 
+   224                                 
+   225 0000012E 4889FB                  mov rbx, rdi
+   226 00000131 4989F4                  mov r12, rsi
+   227 00000134 4989D5                  mov r13, rdx
+   228 00000137 4989CE                  mov r14, rcx
+   229 0000013A 4D89C7                  mov r15, r8
+   230                                 
+   231                                 
+   232                                 
+   233                                 %line 295+0 hw5.asm
+   234 0000013D 4489E0                  mov eax, r12d
+   235 00000140 4401F8                  add eax, r15d
+   236 00000143 BA00000000              mov edx, 0
+   237 00000148 41F7F7                  div r15d
+   238 0000014B 4189D4                  mov r12d, edx
+   239                                 
+   240                                 
+   241 0000014E 4489E8                  mov eax, r13d
+   242 00000151 4401F0                  add eax, r14d
+   243 00000154 BA00000000              mov edx, 0
+   244 00000159 41F7F6                  div r14d
+   245 0000015C 4189D5                  mov r13d, edx
+   246                                 %line 296+1 hw5.asm
+   247                                 
+   248                                 
+   249                                 
+   250                                 
+   251                                 
+   252                                 
+   253                                 
+   254                                 
+   255                                 
+   256                                 
+   257                                 
+   258                                 
+   259                                 
+   260                                 
+   261                                 
+   262                                 
+   263                                 
+   264                                 
+   265                                 
+   266                                 
+   267                                 
+   268                                 
+   269                                 
+   270                                 
+   271                                 
+   272                                 
+   273                                 
+   274                                 
+   275                                 
+   276                                 
+   277                                 
+   278                                 
+   279                                 
+   280                                 
+   281                                 
+   282                                 
+   283 0000015F C3                      ret
