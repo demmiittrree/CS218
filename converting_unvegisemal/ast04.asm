@@ -36,10 +36,10 @@
         
         ; deal with number
         %%isNumber
-            sub sil, '0'         ; get value as a digit
+            sub sil, '0'         ; get value as a digit 
             jmp %%unvConvert
 
-        ; with with uppercase
+        ; with with uppercase 
         %%isUppercase
             sub sil, 'A'         ; get value as a digit
             add sil, 10          ; add ten to even out from 0-9 actual numbers

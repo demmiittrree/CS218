@@ -283,45 +283,172 @@ isGoalReachable:
     push r14
     push r15
 
-    ;Preserve original arguments. Needed because other function calls may overwrite the registers they are in. 
-    ;Saved registers *should* be the same before and after a functiona call by SCC.
-    mov rbx, rdi ;Reference in rbx
-    mov r12, rsi ;x in r15
-    mov r13, rdx ;y in r12
-    mov r14, rcx ;height in r14
-    mov r15, r8  ;width in r15
+    ;Preserve original arguments
+    mov rbx, rdi ;maze
+    mov r12, rsi ;x
+    mov r13, rdx ;y 
+    mov r14, rcx ;height 
+    mov r15, r8  ;width
 
     ;Wrap around any positions to the other side of the array
     wrapAround r12d, r13d, r15d, r14d
 
     ;debugSeeCurrentPos ;Uncomment this to see the current position being visited
-
+     
     ;########## TODO: Finish the code to tell if the maze can be solved.
 
     ;C++ implementation for your reference. Intentionally verbose to help with translation to assembly.
+    
     ;bool isGoalReachable(char maze[], int start_x, int start_y, int height, int width) {
-    ;
-    ;wrapAround(&start_x, &start_y, width, height); //Wrap around coordinates to other side of maze if applicable
+    ;wrapAround(&start_x, &start_y, width, height) //Wrap around coordinates to other side of maze if applicable 
+    ; ^ did previously
+
     ;int linearizedIndex = convertToLinear(width, start_x, start_y);
-    ;
+    mov rdi, r15 ; set width
+    mov rsi, r12 ; set x
+    mov rdx, r13 ; set y
+    call convertToLinear     ; call convertToLinear, assume moved into rax
+
     ;//Base case
     ;if(maze[linearizedIndex] == GOAL) //If goal, return true
     ;   return true;
+    cmp byte[rbx + rax], GOAL
+    je isTrue
+
     ;else if(maze[linearizedIndex == WALL) //If this is a wall, return to the last space and return false
     ;   return false;
+    cmp byte[rbx + rax], WALL
+    je isFalse
+    
     ;else if(maze[linearizedIndex == SEARCHED) //If this space has been searched already, return to last space and return false
     ;   return false;
-    ;
+    cmp byte[rbx + rax], SEARCHED
+    je isFalse
+
     ;maze[linearizedIndex] = SEARCHED; //Mark this spot as searched
-    ;
+    mov byte[rbx + rax], SEARCHED
+    
     ;//Otherwise, search adjacent spaces
     ;int nextX, nextY;
+    mov r9, r12
+    mov r10, r13
+    
+    
+    ; TRY LEFT
+
     ;nextX = start_x - 1; //Try left space
     ;nextY = start_y;
+    ; update variables for scc :(
+    mov rdi, rbx
+    mov rsi, r9
+    dec rsi      ; decrement x
+    mov rdx, r10
+    mov rcx, r14
+    mov r8, r15
+
+    ; RECURSIVE CALL
+    call isGoalReachable
+
     ;bool foundGoal = isGoalReachable(nextX, nextY);
-    ;if(foundGoal) return true;
+    cmp rax, 1   ; check if true / false
+    je isTrue    ; if rax == 1, go true
+
+
+    ; TRY RIGHT
+
+    ;nextX = start_x + 1; //Try right space
+    ;nextY = start_y;
+    mov rdi, rbx
+    mov rsi, r9
+    inc rsi      ; increment x
+    mov rdx, r10
+    mov rcx, r14
+    mov r8, r15
+
+    ; RECURSIVE CALL
+    call isGoalReachable
+
+    ;bool foundGoal = isGoalReachable(nextX, nextY);
+    cmp rax, 1   ; check if true / false
+    je isTrue    ; if rax == 1, go true
+    
+
+    ; TRY UP
+
+    ;nextX = start_x  
+    ;nextY = start_y - 1 //Try up space
+    ; minus 1 because the maze starts at 0,0
+    mov rdi, rbx
+    mov rsi, r9
+    mov rdx, r10
+    dec rdx      ; increment y
+    mov rcx, r14
+    mov r8, r15
+
+    ; RECURSIVE CALL
+    call isGoalReachable
+
+    ;bool foundGoal = isGoalReachable(nextX, nextY);
+    cmp rax, 1   ; check if true / false
+    je isTrue    ; if rax == 1, go true
+
+
+    ; TRY DOWN
+
+    ;nextX = start_x  
+    ;nextY = start_y + 1 //Try down space
+    mov rdi, rbx
+    mov rsi, r9
+    mov rdx, r10
+    inc rdx      ; increment y
+    mov rcx, r14
+    mov r8, r15
+
+    ; RECURSIVE CALL
+    call isGoalReachable
+
+    ;bool foundGoal = isGoalReachable(nextX, nextY);
+    cmp rax, 1   ; check if true / false
+    je isTrue    ; if rax == 1, go true
+
+
+    ; if ALL were FALSE
+    jmp isFalse
+
+    ; return a 1 if comparison is true
+    isTrue:
+        ; since file had stuff pushed got to pop them
+        mov rax, 1
+        pop r15
+        pop r14
+        pop r13
+        pop r12
+        pop rbx
+        ret
+
+    ; return a 0 if comparison is false
+    isFalse:
+        mov rax, 0
+        pop r15
+        pop r14
+        pop r13
+        pop r12
+        pop rbx
+        ret
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     ;
-    ;Proceed to do the other three directions
+    
     ;
     ;return false; //Return false if all four directions did not yield a path to the goal
     ;

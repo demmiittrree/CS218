@@ -1,0 +1,280 @@
+     1                                 %line 1+1 maze.asm
+     2                                 
+     3                                 
+     4                                 
+     5                                 [section .data]
+     6                                 
+     7                                 
+     8                                 [extern NEW_LINE]
+     9                                 [extern isGoalReachable]
+    10                                 [extern int2String]
+    11                                 
+    12                                 
+    13                                 [global printInteger]
+    14                                 [global printMaze]
+    15                                 [global solveMaze]
+    16                                 [global convertToLinear]
+    17                                 
+    18                                 NULL equ 0
+    19                                 LF equ 10
+    20                                 
+    21                                 TRUE equ 1
+    22                                 FALSE equ 0
+    23                                 
+    24                                 
+    25                                 SYS_WRITE equ 1
+    26                                 STDOUT equ 1
+    27                                 
+    28                                 
+    29 00000000 4D617A65206265666F-    MAZE_MSG db "Maze before searching", LF, NULL
+    30 00000000 726520736561726368-
+    31 00000000 696E670A00         
+    32                                 MAZE_MSG_LEN equ 22
+    33 00000017 476F616C20666F756E-    SUCCESS_MSG db "Goal found!", LF, NULL
+    34 00000017 64210A00           
+    35                                 SUCCESS_MSG_LEN equ 12
+    36 00000024 476F616C206E6F7420-    FAIL_MSG db "Goal not found...", LF, NULL
+    37 00000024 666F756E642E2E2E0A-
+    38 00000024 00                 
+    39                                 FAIL_MSG_LEN equ 18
+    40 00000037 5374617274696E6720-    START_MSG db "Starting at pos (", NULL
+    41 00000037 617420706F73202800 
+    42                                 START_MSG_LEN equ 17
+    43 00000049 536561726368696E67-    SEARCH_MSG db "Searching pos (", NULL
+    44 00000049 20706F73202800     
+    45                                 SEARCH_MSG_LEN equ 15
+    46 00000059 2C2000                 COMMA_SPACE db ", ", NULL
+    47                                 COMMA_SPCAE_LEN equ 2
+    48 0000005C 290A00                 PAREN_ENDL db ")", LF, NULL
+    49                                 PAREN_ENDL_LEN equ 2
+    50 0000005F 436861726163746572-    CHAR_MSG db "Character = ", NULL
+    51 0000005F 203D2000           
+    52                                 CHAR_MSG_LEN equ 12
+    53                                 
+    54                                 [section .text]
+    55                                 
+    56                                 
+    57                                 
+    58                                 
+    59                                 
+    60                                 
+    61                                 printMaze:
+    62                                 
+    63 00000000 53                      push rbx
+    64 00000001 4157                    push r15
+    65                                 
+    66                                 
+    67 00000003 4189D7                  mov r15d, edx
+    68                                 
+    69                                 
+    70 00000006 89D0                    mov eax, edx
+    71 00000008 BA00000000              mov edx, 0
+    72 0000000D F7E6                    mul esi
+    73 0000000F 01F0                    add eax, esi
+    74                                 
+    75 00000011 48C7C300000000          mov rbx, 0
+    76 00000018 89C3                    mov ebx, eax
+    77 0000001A 4829DC                  sub rsp, rbx
+    78                                 
+    79                                 
+    80 0000001D 49C7C100000000          mov r9, 0
+    81 00000024 49C7C200000000          mov r10, 0
+    82                                  strLoop:
+    83 0000002B 468A040F                mov r8b, byte[rdi + r9]
+    84 0000002F 46880414                mov byte[rsp + r10], r8b
+    85                                 
+    86                                 
+    87 00000033 41FFC1                  inc r9d
+    88 00000036 49FFC2                  inc r10
+    89 00000039 BA00000000              mov edx, 0
+    90 0000003E 4C89C8                  mov rax, r9
+    91 00000041 41F7F7                  div r15d
+    92 00000044 83FA00                  cmp edx, 0
+    93 00000047 7506                    jne notEndOfRow
+    94                                 
+    95                                 
+    96 00000049 42C604140A              mov byte[rsp + r10], LF
+    97 0000004E 49FFC2                  inc r10
+    98                                 
+    99                                  notEndOfRow:
+   100                                 
+   101 00000051 4939DA                  cmp r10, rbx
+   102 00000054 72D3                    jb strLoop
+   103                                 
+   104                                 
+   105 00000056 48C7C001000000          mov rax, SYS_WRITE
+   106 0000005D 48C7C701000000          mov rdi, STDOUT
+   107 00000064 4889E6                  mov rsi, rsp
+   108 00000067 4889DA                  mov rdx, rbx
+   109 0000006A 0F05                    syscall
+   110                                 
+   111                                 
+   112 0000006C 4801DC                  add rsp, rbx
+   113                                 
+   114                                 
+   115 0000006F 415F                    pop r15
+   116 00000071 5B                      pop rbx
+   117                                 
+   118 00000072 C3                      ret
+   119                                 
+   120                                 
+   121                                 
+   122                                 
+   123                                 
+   124                                 
+   125                                 
+   126                                 solveMaze:
+   127                                 
+   128                                 
+   129 00000073 53                      push rbx
+   130 00000074 4157                    push r15
+   131 00000076 4154                    push r12
+   132 00000078 4155                    push r13
+   133 0000007A 4156                    push r14
+   134                                 
+   135                                 
+   136 0000007C 4889FB                  mov rbx, rdi
+   137 0000007F 4989F7                  mov r15, rsi
+   138 00000082 4989D4                  mov r12, rdx
+   139 00000085 4989CD                  mov r13, rcx
+   140 00000088 4D89C6                  mov r14, r8
+   141                                 
+   142                                 
+   143 0000008B 48C7C001000000          mov rax, SYS_WRITE
+   144 00000092 48C7C701000000          mov rdi, STDOUT
+   145 00000099 48C7C6[00000000]        mov rsi, MAZE_MSG
+   146 000000A0 48C7C216000000          mov rdx, MAZE_MSG_LEN
+   147 000000A7 0F05                    syscall
+   148                                 
+   149                                 
+   150 000000A9 4889DF                  mov rdi, rbx
+   151 000000AC 4C89EE                  mov rsi, r13
+   152 000000AF 4C89F2                  mov rdx, r14
+   153 000000B2 E844FFFFFF              call printMaze
+   154                                 
+   155                                 
+   156 000000B7 48C7C001000000          mov rax, SYS_WRITE
+   157 000000BE 48C7C701000000          mov rdi, STDOUT
+   158 000000C5 48C7C6[00000000]        mov rsi, START_MSG
+   159 000000CC 48C7C211000000          mov rdx, START_MSG_LEN
+   160 000000D3 0F05                    syscall
+   161                                 
+   162 000000D5 4C89FF                  mov rdi, r15
+   163 000000D8 E8C6000000              call printInteger
+   164                                 
+   165 000000DD 48C7C001000000          mov rax, SYS_WRITE
+   166 000000E4 48C7C701000000          mov rdi, STDOUT
+   167 000000EB 48C7C6[00000000]        mov rsi, COMMA_SPACE
+   168 000000F2 48C7C202000000          mov rdx, COMMA_SPCAE_LEN
+   169 000000F9 0F05                    syscall
+   170                                 
+   171 000000FB 4C89E7                  mov rdi, r12
+   172 000000FE E8A0000000              call printInteger
+   173                                 
+   174 00000103 48C7C001000000          mov rax, SYS_WRITE
+   175 0000010A 48C7C701000000          mov rdi, STDOUT
+   176 00000111 48C7C6[00000000]        mov rsi, PAREN_ENDL
+   177 00000118 48C7C202000000          mov rdx, PAREN_ENDL_LEN
+   178 0000011F 0F05                    syscall
+   179                                 
+   180                                 
+   181 00000121 4889DF                  mov rdi, rbx
+   182 00000124 4C89FE                  mov rsi, r15
+   183 00000127 4C89E2                  mov rdx, r12
+   184 0000012A 4C89E9                  mov rcx, r13
+   185 0000012D 4D89F0                  mov r8, r14
+   186 00000130 E8(F6FFFFFF)            call isGoalReachable
+   187                                 
+   188                                 
+   189 00000135 4883F801                cmp rax, TRUE
+   190 00000139 741E                    je mazeSolvedSuccessfully
+   191 0000013B 48C7C001000000          mov rax, SYS_WRITE
+   192 00000142 48C7C701000000          mov rdi, STDOUT
+   193 00000149 48C7C6[00000000]        mov rsi, FAIL_MSG
+   194 00000150 48C7C212000000          mov rdx, FAIL_MSG_LEN
+   195 00000157 0F05                    syscall
+   196 00000159 EB1C                    jmp solveMazeEpilogue
+   197                                 
+   198                                  mazeSolvedSuccessfully:
+   199 0000015B 48C7C001000000          mov rax, SYS_WRITE
+   200 00000162 48C7C701000000          mov rdi, STDOUT
+   201 00000169 48C7C6[00000000]        mov rsi, SUCCESS_MSG
+   202 00000170 48C7C20C000000          mov rdx, SUCCESS_MSG_LEN
+   203 00000177 0F05                    syscall
+   204                                 
+   205                                  solveMazeEpilogue:
+   206                                 
+   207 00000179 48C7C001000000          mov rax, SYS_WRITE
+   208 00000180 48C7C701000000          mov rdi, STDOUT
+   209 00000187 48C7C6[00000000]        mov rsi, NEW_LINE
+   210 0000018E 48C7C201000000          mov rdx, 1
+   211 00000195 0F05                    syscall
+   212                                 
+   213                                 
+   214 00000197 415E                    pop r14
+   215 00000199 415D                    pop r13
+   216 0000019B 415C                    pop r12
+   217 0000019D 415F                    pop r15
+   218 0000019F 5B                      pop rbx
+   219                                 
+   220 000001A0 C3                      ret
+   221                                 
+   222                                 
+   223                                 
+   224                                 
+   225                                 
+   226                                 
+   227                                 
+   228                                 convertToLinear:
+   229 000001A1 89D0                    mov eax, edx
+   230 000001A3 F7E7                    mul edi
+   231 000001A5 01F0                    add eax, esi
+   232                                 
+   233 000001A7 C3                      ret
+   234                                 
+   235                                 
+   236                                 
+   237                                 
+   238                                 
+   239                                 printInteger:
+   240                                 
+   241 000001A8 53                      push rbx
+   242                                 
+   243                                 
+   244 000001A9 89F8                    mov eax, edi
+   245 000001AB 48C7C300000000          mov rbx, 0
+   246 000001B2 BE0A000000              mov esi, 10
+   247                                  logLoop:
+   248 000001B7 BA00000000              mov edx, 0
+   249 000001BC F7F6                    div esi
+   250 000001BE FFC3                    inc ebx
+   251 000001C0 83F800                  cmp eax, 0
+   252 000001C3 77F0                    ja logLoop
+   253                                 
+   254                                 
+   255 000001C5 4829DC                  sub rsp, rbx
+   256 000001C8 48FFCC                  dec rsp
+   257                                 
+   258                                 
+   259 000001CB 4889E6                  mov rsi, rsp
+   260 000001CE 89DA                    mov edx, ebx
+   261 000001D0 E8(F6FFFFFF)            call int2String
+   262                                 
+   263                                 
+   264 000001D5 C6041C00                mov byte[rsp + rbx], NULL
+   265                                 
+   266                                 
+   267 000001D9 48C7C001000000          mov rax, SYS_WRITE
+   268 000001E0 48C7C701000000          mov rdi, STDOUT
+   269 000001E7 4889E6                  mov rsi, rsp
+   270 000001EA 4889DA                  mov rdx, rbx
+   271 000001ED 0F05                    syscall
+   272                                 
+   273                                 
+   274 000001EF 4801DC                  add rsp, rbx
+   275 000001F2 48FFC4                  inc rsp
+   276                                 
+   277                                 
+   278 000001F5 5B                      pop rbx
+   279                                 
+   280 000001F6 C3                      ret
