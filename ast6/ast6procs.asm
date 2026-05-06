@@ -161,8 +161,8 @@ checkParams:
     mov r9, rsi
 
     ; overwrite rsi for syscall
-    mov rsi, 0           ; make rsi = 0 for read only
-    mov rax, 2           ; syscall 2 is open file
+    mov rsi, O_RDONLY    ; make rsi = 0 for read only
+    mov rax, SYS_open    ; syscall 2 is open file
     syscall 
 
     ; put r9 back into rsi
@@ -208,9 +208,9 @@ checkParams:
 
 
     ; RETURN FILE DESCRIPTOR
-    mov [r8], rax        ; rax holds the descriptor after a successful file read
+    mov [r8], rax         ; rax holds the descriptor after a successful file read
     
-    
+
     ; CHECK WORD LENGTH AGAINST MAX
     
     ; since word would be at arr[4]
@@ -267,7 +267,7 @@ ret
 ; rdx = bool& isValid
 ; rcx = long long& fileDescriptor
 global getWord
-; bool getWord(chae[] wordObtained, int MAXWORDLENGTH, booth& isValid)
+; bool getWord(char[] wordObtained, int MAXWORDLENGTH, bool& isValid)
 getWord:
     ; push before using them
     push rbx
@@ -275,12 +275,13 @@ getWord:
     push r13
     push r14
 
-    mov r12, buffer ; set buffer address
+    mov r12, buffer    ; set buffer address
         
     ; sysread is (fileDescriptor, buffer, count)
-    push rdi        ; have to save the wordObtained location
-    push rsi        ; have to save MAXWORDLENGTH
-    push rdx        ; save bool &isValid location
+    push rdi           ; have to save wordObtained
+    push rsi           ; have to save MAXWORDLENGTH
+    push rdx           ; have to save bool &isValid 
+    push rcx           ; have to save long long& file descriptor
 
     mov rdi, [rcx]     ; move descriptor into rdi   
     mov rsi, r12       ; move buffer into rsi
@@ -288,18 +289,19 @@ getWord:
     mov rax, 0         ; move 0 into rax for sys_read 
     syscall            ; call sysread
     
-    pop rdx         ; make rdx == to bool &isValid
-    pop rsi         ; make rsi == to MAXWORDLENGTH
-    pop rdi         ; make rdi == to wordObtained location again
+    pop rcx            ; make rcx = to long long& file descriptor
+    pop rdx            ; make rdx = to bool &isValid
+    pop rsi            ; make rsi = to MAXWORDLENGTH
+    pop rdi            ; make rdi = to wordObtained location again
     
     ; after sysread finished
-    cmp rax, 0      ; compare bytes read to 0
-    jle noRead      ; if return state is less than or equal to 0, nothing to read
+    cmp rax, 0         ; compare bytes read to 0
+    jle noRead         ; if return state is less than or equal to 0, nothing to read
 
-    mov r13, 0      ; use to index through buffer data
-    mov r14, rax    ; use as a total byte count
-    mov rbx, 0      ; use to index through given word
-    
+    mov r13, 0         ; use to index through buffer data
+    mov r14, rax       ; use as a total byte count
+    mov rbx, 0         ; use to index through given word
+
     ; check for end of word (space char or less in ASCII)
     checkSpace:
         cmp r13, r14             ; check count against total number of valid bytes
@@ -355,7 +357,6 @@ getWord:
         pop r12
         pop rbx
         ret
-ret
 
 ; rdi = char[] wordObtained
 ; rsi = char[] wordToCheck
@@ -392,7 +393,6 @@ checkWord:
 
         mov rax, 1      ; return 1 for true
         ret
-ret
 
 ; rdi = long long fileDescriptor
 global closeFile
