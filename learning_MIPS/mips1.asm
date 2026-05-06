@@ -59,17 +59,6 @@ main:
     lw $t4, 0($t0) # load arr[0] into t4, use as min
     lw $t5, 0($t0) # load arr[0] into t5, use as max
 
-
-    # POST PART 1
-    # cSides variables
-
-    la $t10, cSides  # load cSides space into $t10
-    li $t11, 0       # use as a cSides[i] sum
-    li $t12, 0       # use as a counter
-    li $t13, 5       # use as a limit (every 5 aSides, need to reset counter)
-    li $t14, 0       # use as true count (0-9)
-    li $t15, 0       # use as sum
-
     loop:
         beq $t2, $t1, endLoop   # if i == len, end loop
         
@@ -96,30 +85,7 @@ main:
         passMax:
         # update i and jump
         addi $t2, $t2, 1        # increment i variable
-        j loop                  # jump back to the top of loop
-
-
-
-
-        # cSides portion of LOOP
-        slt $t8, $t12, $t13       # check if counter < 5
-        beq $t8, $zero, reset     # if counter < 5, update cSides[i]
-
-        # if counter is under 5
-        update:
-        add $t11, $t11, $t7       # cSides[i] += aSides[i]
-        j loop                    # jump to the top of loop 
-
-        # if counter reached 5
-        reset:
-        li $t12, 0         # reset back to 0
-
-        mul $t6, $t14, 4   # compute index of cSides array
-        add $t6, $t10, $t6 # make t6 hold current address of cSides array
-
-
-        addi $t14, $t14, 1 # increment true count variable
-        j update           # jump back to update
+        j loop
 
     endLoop:
 
@@ -134,6 +100,82 @@ main:
     sw $t9, aAvg
 
 
+    # CSIDES LOOP
+
+    # just in case
+    la $t0, aSides
+
+    # using saved registers
+    lw $s1, 0($t0) # load aSides[0] into MIN
+    lw $s2, 0($t0) # load aSides[0] into MAX
+    li $s3, 0      # load 0 into         SUM
+    lw $s4, len    # load len into s4    LEN
+
+    # use temp for other stuff
+    li $t1, 0      # make t1 hold COUNT
+    li $t2, 0      # make t2 hold INDEX
+    li $t3, 0      # make t3 hold cSideSum
+    li $t4, 0      # make t4 hold i
+    la $t5, cSides # make t5 hold cSides address
+    
+    cLoop:
+        bge $t4, $s4, endCLoop  # make sure i < len
+
+        mul $t6, $t4, 4         # make t6 hold true i
+        add $t6, $t6, $t0       # make t6 = addres of aSides[i]
+        lw $t7, 0($t6)          # make t7 = aSides[i]
+
+        # get sum
+        add $s3, $s3, $t7       # sum += aSides[i]
+        add $t3, $t3, $t7       # cSideSum += aSides[i]
+
+        # increment count
+        addi, $t1, $t1, 1       # ++count
+
+        bne $t1, 5, skipUpdate  # if count != 5, skip updating cSides
+
+        # if count == 5
+        mul $t6, $t2, 4         # make t6 hold true index
+        add $t6, $t6, $t5       # make t6 = address of cSides[index]
+        
+        sw $t3, 0($t6)          # make cSides[index] = cSideSum
+    
+        # check if cSides[index] (cSideSum) < min
+        bge $t3, $s1, skipMin   # if cSideSum >= min, skip
+
+        # if cSideSum < min
+        move $s1, $t3           # min = cSideSum
+
+        skipMin:
+        
+        #check if cSides[index] (cSideSum) > max
+        ble $t3, $s2, skipMax   # if cSideSum <= max, skip
+
+        # if cSideSum > max
+        move $s2, $t3
+
+        skipMax:
+        
+        li $t1, 0               # make count = 0 again
+        li $t3, 0               # make cSideSum = 0 again
+
+        addi $t2, $t2, 1        # increment index
+
+        skipUpdate:
+
+        addi $t4, $t4, 1        # increment i
+        j cLoop                 # jump back to top of cLoop
+        
+    endCLoop:
+
+    div $s3, $t2      # divide sum by index
+    mflo $t9          # make t9 hold quotient
+
+    # store registers into memory
+    sw $s1, cMin
+    sw $s2, cMax
+    sw $s3, cSum
+    sw $t9, cAvg
 
 
     # DANGER!!!!!!!! PRINTS - DO NOT EDIT
@@ -153,7 +195,7 @@ main:
         syscall
 
     la $a0, cSides
-    lw $a1, len
+    li $a1, 10
     jal printArrayFunc
 
         li $v0, 4
